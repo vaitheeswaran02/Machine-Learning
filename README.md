@@ -1,4 +1,5 @@
-Machine Learning Laboratory Programs
+**Machine Learning Laboratory Programs**
+
 📌 Overview
 
 This repository contains Machine Learning lab programs implemented as part of the academic curriculum. The programs cover fundamental and core machine learning algorithms, focusing on concept understanding, implementation, and practical usage.
