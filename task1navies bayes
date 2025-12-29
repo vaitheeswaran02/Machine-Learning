@@ -1,0 +1,63 @@
+# Training dataset
+# (Study Hours, Attendance, Result)
+data = [
+    ('Low', 'Low', 'No'),
+    ('Low', 'High', 'No'),
+    ('Low', 'Low', 'No'),
+    ('Low', 'High', 'No'),
+    ('High', 'Low', 'Yes'),
+    ('High', 'High', 'Yes'),
+    ('High', 'High', 'Yes'),
+    ('High', 'Low', 'Yes'),
+    ('High', 'High', 'Yes'),
+    ('Low', 'Low', 'No')
+]
+
+# Count total records
+total = len(data)
+
+# Count class occurrences
+yes_count = 0
+no_count = 0
+
+for row in data:
+    if row[2] == 'Yes':
+        yes_count += 1
+    else:
+        no_count += 1
+
+# Prior probabilities
+P_yes = yes_count / total
+P_no = no_count / total
+
+# Conditional probability function
+def conditional_probability(feature_index, feature_value, class_label):
+    count = 0
+    class_count = 0
+
+    for row in data:
+        if row[2] == class_label:
+            class_count += 1
+            if row[feature_index] == feature_value:
+                count += 1
+
+    return count / class_count
+
+# Prediction function
+def predict(study_hours, attendance):
+    yes_prob = P_yes * \
+               conditional_probability(0, study_hours, 'Yes') * \
+               conditional_probability(1, attendance, 'Yes')
+
+    no_prob = P_no * \
+              conditional_probability(0, study_hours, 'No') * \
+              conditional_probability(1, attendance, 'No')
+
+    if yes_prob > no_prob:
+        return "Pass (Yes)"
+    else:
+        return "Fail (No)"
+
+# Test the model
+print("Prediction:", predict('High', 'High'))
+print("Prediction:", predict('Low', 'Low'))
