@@ -1,0 +1,42 @@
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch.nn.functional as F
+
+DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+MODEL_NAME = "planghimire/nepali-english-fake-news-detector"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME).to(DEVICE)
+model.eval()
+
+def predict_news(text: str):
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512,
+        padding=True
+    ).to(DEVICE)
+
+    with torch.no_grad():
+        probs = F.softmax(model(**inputs).logits, dim=-1)[0]
+
+    fake_prob, real_prob = probs.tolist()
+    is_real = real_prob > fake_prob
+
+    print(
+        f"Prediction: {'REAL' if is_real else 'FAKE'} | "
+        f"Confidence: {max(real_prob, fake_prob):.2%} | "
+        f"Real: {real_prob:.3f} | Fake: {fake_prob:.3f}"
+    )
+
+    return {
+        "label": "Real" if is_real else "Fake",
+        "confidence": max(real_prob, fake_prob),
+        "real_prob": real_prob,
+        "fake_prob": fake_prob
+    }
+
+# Test
+text = "india pm have beed died yesterday"
+predict_news(text)
