@@ -4,20 +4,18 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.preprocessing import LabelEncoder
 
 # --------------------------------------------------
-# Step 1: Create Dataset
+# Step 1: Create Small Dataset
 # --------------------------------------------------
 data = {
-    'Study_Hours': ['High','High','Medium','Low','Low','Medium','Medium','High'],
-    'Attendance': ['Good','Average','Good','Poor','Average','Average','Poor','Good'],
-    'Assignment': ['Yes','Yes','Yes','No','Yes','Yes','No','Yes'],
-    'Test_Score': ['High','Low','High','Low','Low','Low','Low','Low'],
-    'Result': ['Pass','Pass','Pass','Fail','Fail','Pass','Fail','Pass']
+    'Weather': ['Sunny', 'Sunny', 'Rainy', 'Rainy'],
+    'Humidity': ['High', 'Normal', 'High', 'Normal'],
+    'Play': ['No', 'Yes', 'Yes', 'Yes']
 }
 
 df = pd.DataFrame(data)
 
 # --------------------------------------------------
-# Step 2: Label Encoding (SEPARATE encoders)
+# Step 2: Label Encoding
 # --------------------------------------------------
 encoders = {}
 for col in df.columns:
@@ -27,49 +25,48 @@ for col in df.columns:
 print("Encoded Dataset:\n", df)
 
 # --------------------------------------------------
-# Step 3: Split Features and Target
+# Step 3: Split Features & Target
 # --------------------------------------------------
-X = df[['Study_Hours', 'Assignment', 'Attendance', 'Test_Score']]
-y = df['Result']
+X = df[['Weather', 'Humidity']]
+y = df['Play']
 
 # --------------------------------------------------
-# Step 4: Train Decision Tree (Entropy)
+# Step 4: Train Small Decision Tree
 # --------------------------------------------------
 model = DecisionTreeClassifier(
     criterion='entropy',
-    max_depth=2,
+    max_depth=1,   # 👈 Makes tree VERY SMALL
     random_state=0
 )
 model.fit(X, y)
-print("\nDecision Tree Model Trained Successfully")
+
+print("\nModel Trained Successfully")
 
 # --------------------------------------------------
-# Step 5: Classify New Sample (PROPER encoding)
+# Step 5: Predict New Sample
 # --------------------------------------------------
 new_sample = pd.DataFrame({
-    'Study_Hours': encoders['Study_Hours'].transform(['Medium']),
-    'Assignment': encoders['Assignment'].transform(['Yes']),
-    'Attendance': encoders['Attendance'].transform(['Good']),
-    'Test_Score': encoders['Test_Score'].transform(['Low'])
+    'Weather': encoders['Weather'].transform(['Sunny']),
+    'Humidity': encoders['Humidity'].transform(['High'])
 })
 
 prediction = model.predict(new_sample)
+result = encoders['Play'].inverse_transform(prediction)
 
-result_label = encoders['Result'].inverse_transform(prediction)
-print("\nNew Student Prediction:")
-print("Result =", result_label[0])
+print("\nPrediction for New Sample:")
+print("Play =", result[0])
 
 # --------------------------------------------------
-# Step 6: Plot Decision Tree (NO entropy display)
+# Step 6: Plot Small Tree
 # --------------------------------------------------
-plt.figure(figsize=(14, 8))
+plt.figure(figsize=(6, 4))
 plot_tree(
     model,
     feature_names=X.columns,
-    class_names=encoders['Result'].classes_,
+    class_names=encoders['Play'].classes_,
     filled=True,
     rounded=True,
     impurity=False
 )
-plt.title("Decision Tree (Entropy / ID3)")
+plt.title("Small Decision Tree (Entropy)")
 plt.show()
