@@ -153,3 +153,37 @@ for row in data_list:
 # Output
 print("Final S:", S)
 print("Final G:", G)
+
+====clustering====
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+# Load dataset
+data = pd.read_csv("data.csv")
+
+# Select features (columns)
+X = data[['x', 'y']]
+
+# Apply KMeans
+kmeans = KMeans(n_clusters=2)
+kmeans.fit(X)
+
+# Get labels
+labels = kmeans.labels_
+
+# Add labels to dataset
+data['Cluster'] = labels
+
+print(data)
+
+# Plot clusters
+plt.scatter(X['x'], X['y'], c=labels)
+plt.scatter(kmeans.cluster_centers_[:,0],
+            kmeans.cluster_centers_[:,1],
+            marker='X')
+
+plt.title("K-Means Clustering")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
