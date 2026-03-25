@@ -7,12 +7,12 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.decomposition import PCA
 
-# ---------------- PAGE CONFIG ----------------
+# PAGE CONFIG 
 st.set_page_config(page_title="Student Clustering", layout="wide")
 
 st.title("🎓 Student Clustering System (K-Means)")
 
-# ---------------- LOAD DATA ----------------
+# LOAD DATA --
 @st.cache_data
 def load_data():
     df1 = pd.read_csv("student-mat.csv", sep=';')
@@ -24,7 +24,7 @@ data = load_data()
 st.subheader("📊 Dataset Preview")
 st.dataframe(data.head())
 
-# ---------------- PREPROCESS ----------------
+#  PREPROCESS
 df = data.copy()
 
 le = LabelEncoder()
@@ -37,27 +37,27 @@ X = df.drop(['G3'], axis=1)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
-# ---------------- SELECT K ----------------
-st.subheader("⚙️ Select Number of Clusters")
+# SELECT K 
+st.subheader("Select Number of Clusters")
 
 k = st.slider("Number of Clusters (K)", 2, 10, 3)
 
-# ---------------- K-MEANS ----------------
+# K-MEANS
 kmeans = KMeans(n_clusters=k, random_state=42)
 clusters = kmeans.fit_predict(X_scaled)
 
-# ---------------- SILHOUETTE SCORE ----------------
+# SILHOUETTE SCORE 
 score = silhouette_score(X_scaled, clusters)
 
-st.subheader("📈 Evaluation")
+st.subheader("Evaluation")
 st.metric("Silhouette Score", round(score, 3))
 
-# ---------------- PCA FOR VISUALIZATION ----------------
+# PCA FOR VISUALIZATION 
 pca = PCA(n_components=2)
 X_pca = pca.fit_transform(X_scaled)
 
-# ---------------- CLUSTER PLOT ----------------
-st.subheader("📊 Cluster Visualization")
+# CLUSTER PLOT 
+st.subheader("Cluster Visualization")
 
 fig, ax = plt.subplots(figsize=(4, 4))  # smaller size
 ax.scatter(X_pca[:, 0], X_pca[:, 1], c=clusters)
@@ -70,8 +70,8 @@ col1, col2, col3 = st.columns([1, 2, 1])  # center
 with col2:
     st.pyplot(fig)
 
-# ---------------- ELBOW METHOD ----------------
-st.subheader("📉 Elbow Method")
+#  ELBOW METHOD
+st.subheader(" Elbow Method")
 
 wcss = []
 K_range = range(1, 11)
